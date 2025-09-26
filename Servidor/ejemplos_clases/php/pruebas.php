@@ -1,10 +1,9 @@
 <?php 
-$a1 = "Hola";
-$b1 = null;
 
-$resultado = $a11 ?? $b1;
-print($resultado);
+class Alumno {
+  public $nombre = "Pedro";
+}
 
-
-
+$a = new Alumno();
+echo $a->apellido;
 ?>
