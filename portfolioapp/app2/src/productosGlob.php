@@ -1,8 +1,11 @@
 <?php include_once("templates/header.php") ?>
+<?php include_once("utils.php") ?>
 <?php 
 $page = isset($_GET["page"])? (int)$_GET["page"]: 1;  
+$order = isset($_GET["order"])? $_GET["order"]: "ascendente";
 ?>
 <?php include_once("datos.php") ?>
+<?php $proyectos = orderby($proyectos, $order); //UD3.2.f ordenamos el array de proyectos haciendo uso de la función, pasándole el array y el método de orden?>
 <div class="container">
     <div class="row">
     <?php $contador = 0;?>
@@ -27,7 +30,7 @@ $page = isset($_GET["page"])? (int)$_GET["page"]: 1;
 <div class="row">
 <?php if ($page > 1) { ?>
 <div class="col d-flex justify-content-center  my-5">
-        <a href="?page=<?php print($page-1)?>" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="?page=<?php print($page-1 . "&order=" . $order) //UD3.2.f cada vez que se cambie de página, tenemos que hacer que persista la variable order?>" class="btn btn-primary btn-lg px-3 py-1">
         ATRÁS
         </a>
 </div>
@@ -35,20 +38,20 @@ $page = isset($_GET["page"])? (int)$_GET["page"]: 1;
 <?php }?>
 <!-- UD3.2.f Botón para ordenar de manera ascendente -->
 <div class="col d-flex justify-content-center my-5">
-        <a href="productosGlob.php" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="productosGlob.php?page=<?php print($page) //UD3.2.f seguimos en la misma página pero cambiando el valor de la variable de entorno order?>&order=ascendente" class="btn btn-primary btn-lg px-3 py-1">
         ORDENAR DE MANERA ASCENDENTE
         </a>
 </div>
 
 <!-- UD3.2.f Botón para ordenar de manera descentente -->
 <div class="col d-flex justify-content-center my-5">
-        <a href="productosGlob.php" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="productosGlob.php?page=<?php print($page) //UD3.2.f seguimos en la misma página pero cambiando el valor de la variable de entorno order?>&order=descendente" class="btn btn-primary btn-lg px-3 py-1">
         ORDENAR DE MANERA DESCENDENTE
         </a>
 </div>
 <?php if ($page < (count($proyectos)/4) ) {?>
 <div class="col d-flex justify-content-center my-5">
-        <a href="?page=<?php print($page+1)?>" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="?page=<?php print($page+1 . "&order=" . $order) //UD3.2.f cada vez que se cambie de página, tenemos que hacer que persista la variable order?>" class="btn btn-primary btn-lg px-3 py-1">
         SIGUIENTE
         </a>
 </div>
