@@ -13,5 +13,9 @@
     }
     ?>  
 </div> -->
-<?php usort($proyectos, function($a, $b){return $a['titulo']<=>['titulo'];});?>
+<!-- <?php $primer_valor = current($proyectos)['dinero'];
+foreach($proyectos as $proyecto => $valor){
+    $resultado = $primer_valor <=> $valor['dinero'];
+    print("comparando" . $primer_valor . "con" . $valor['dinero'] . "tenemos" . $resultado . "<br>");
+}?> -->
 <?php include_once("templates/footer.php") ?>
