@@ -35,12 +35,21 @@
                 <span class="caret"></span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <a class="dropdown-item" href="#">Categoría1</a>
-                    <a class="dropdown-item" href="#">Categoría2</a>
-                    <a class="dropdown-item" href="#">Categoría3</a>
+                    <?php foreach($categorias as $categoria => $nombreCategoria):?>
+                    <a class="dropdown-item" href="productosGlob.php?categoria=<?php print($categoria)?>"><?php print($nombreCategoria)?></a>
+                    <?php endforeach?>
                 </div>
             </li>
 <!-- UD3.2.b Botón de inicio con un enlace al módulo contacto.php -->
+            <li class="nav-item">
+                <a href="sobreMi.php" 
+                class="nav-link
+                <?php if($_SERVER['SCRIPT_NAME'] == "/sobreMi.php") { 
+                    echo "active"; 
+                } ?>"
+                aria-current="page">SOBRE MÍ
+                </a>
+            </li>
             <li class="nav-item">
                 <a href="contacto.php" 
                 class="nav-link

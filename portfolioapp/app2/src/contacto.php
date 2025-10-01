@@ -1,18 +1,24 @@
 <?php include_once("templates/header.php")?>
+<?php include_once("utils.php")?>
 <?php include_once("datos.php") //UD3.2.c importamos nuetros datos para tener acceso a la variable del nombre?>
+<?php
+$nameErr = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nameErr = comprobarNombre();
+}
+?>
 <div class="container">
     <h2 class="mb-5">Contacto</h2>
     <div class="row">
-        <div class="col-md">
-            <img src="static/images/imagen3.jpeg" class="img-fluid rounded">
-        </div>
-        <div class="col-md">
-            <h3><?php print($contacto)  //UD3.2.c Mostramos el contenido de la variable?></h3>
-            <p>Ciclo Superior DAW.</p>
-            <p>Apasionado del mundo de la programación en general, y de las tecnologías web en particular.</p>
-            <p>Si tienes cualquier tipo de pregunta, contacta conmigo por favor.</p>
-            <p>Teléfono: 87654321</p>
-        </div>
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST">
+    <div class="mb-3 col-sm-6 p-0">
+        <label for="nombreApellidosID" class="form-label">Nombre y apellidos</label>
+        <input type="text" name="nombreApellidos" class="form-control" id="nombreApellidosID" placeholder="Su nombre y apellidos">
+        <span class="text-danger"> <?php echo $nameErr?> </span>
+
+    </div>
+    <button type="submit" class="btn btn-success">Enviar</button>
+    </form>
     </div>
 </div>
 <?php include_once("templates/footer.php")?>

@@ -15,5 +15,34 @@ function mostrarCategorias($proyecto, $categorias){
             print($categorias[$categoriaProducto]."  ");
         };
     };
-} 
+}
+
+function filtrarCategoria($proyectos) {
+    if ($_GET["categoria"]) {
+        $proyectosFiltrado = [];
+        foreach ($proyectos as $proyecto) {
+            if (in_array($_GET['categoria'],$proyecto['categoria'])) {
+                $proyectosFiltrado[] = $proyecto;
+            };
+        }
+        return $proyectosFiltrado;
+    }
+}    
+        
+
+function test_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
+function comprobarNombre() {
+    if (empty($_POST["nombreApellidos"])) {
+        $nameErr = "Por favor, introduzca nombre y apellidos";
+        return $nameErr;
+    } else {
+        test_input($_POST["nombreApellidos"]);;
+     }
+}
 ?>

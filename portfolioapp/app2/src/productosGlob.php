@@ -3,11 +3,16 @@
 <?php 
 $page = isset($_GET["page"])? (int)$_GET["page"]: 1;  // variable de get referente a la página de productos en la que nos encontremos 
 $order = isset($_GET["order"])? $_GET["order"]: "ascendente";  // variable de get según como queramos ordenar los productos
-$id = isset($_GET["id"])? $_GET["id"]: "0";  // variable de get que indica el id del producto seleccionado
+$id = isset($_GET["id"])? $_GET["id"]: false;  // variable de get que indica el id del producto seleccionado
+$categoria = isset($_GET["categoria"])? $_GET["categoria"]: false;
 
 ?>
 <?php include_once("datos.php") ?>
 <?php $proyectos = orderby($proyectos, $order);  // UD3.2.f ordenamos el array de proyectos haciendo uso de la función, pasándole el array y el método de orden?>
+<?php if ($categoria) {
+    $proyectosFiltrado = filtrarCategoria($proyectos);
+    $proyectos = $proyectosFiltrado;
+}?>
 <div class="container">
     <div class="row">
     <?php $contador = 0;?>
