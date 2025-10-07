@@ -6,7 +6,7 @@ $contacto = "Alberto Martínez Martínez";
 $loggedIn = true;
 
 //UD3.3.b Array categorías y campo de fechas en los proyectos
-$categorias = [
+$datoscategorias = [
     'categoria1' => 'El Greco',
     'categoria2' => 'Goya',
     'categoria3' => 'Velazquez',
@@ -18,7 +18,7 @@ $categorias = [
     'categoria9' => 'Marina',
 ];
 
-$proyectos = [
+$datosproyectos = [
     // El Greco
     [
         'clave' => 'proyecto1',
@@ -178,4 +178,9 @@ $proyectos = [
     ],
 ];
 
+file_put_contents("datos1.json", json_encode($datosproyectos,JSON_PRETTY_PRINT));
+$proyectos = json_decode(file_get_contents("datos1.json"), true);
+
+file_put_contents("datos2.json", json_encode($datoscategorias,JSON_PRETTY_PRINT));
+$categorias = json_decode(file_get_contents("datos2.json"), true);
 ?>

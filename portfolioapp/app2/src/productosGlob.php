@@ -1,10 +1,12 @@
 <?php include_once("templates/header.php") ?>
 <?php include_once("utils.php")?>
+
 <?php 
 $page = isset($_GET["page"])? (int)$_GET["page"]: 1;  // variable de get referente a la página de productos en la que nos encontremos 
 $order = isset($_GET["order"])? $_GET["order"]: "ascendente";  // variable de get según como queramos ordenar los productos
 $id = isset($_GET["id"])? $_GET["id"]: false;  // variable de get que indica el id del producto seleccionado
 $categoria = isset($_GET["categoria"])? $_GET["categoria"]: false;
+$delete = isset($_GET["delete"])? $_GET["delete"]: false;
 
 ?>
 <?php include_once("datos.php") ?>
@@ -58,6 +60,16 @@ $categoria = isset($_GET["categoria"])? $_GET["categoria"]: false;
         ORDENAR DE MANERA DESCENDENTE
         </a>
 </div>
+
+<?php if ($categoria){?>
+<div class="col d-flex justify-content-center my-5">
+        <a href="?page=<?php print($page . "&order=" . $order . "&categoria")?>" class="btn btn-primary btn-lg px-3 py-1">
+        BORRAR ÚLTIMO PROYECTO
+        </a>
+</div>
+<?php }?>
+</div>
+
 <?php if ($page < (count($proyectos)/4) ) {?>
 <div class="col d-flex justify-content-center my-5">
         <a href="?page=<?php print($page+1 . "&order=" . $order)  // UD3.2.f cada vez que se cambie de página, tenemos que hacer que persista la variable order?>" class="btn btn-primary btn-lg px-3 py-1">
