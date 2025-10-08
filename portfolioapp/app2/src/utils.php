@@ -17,6 +17,22 @@ function mostrarCategorias($proyecto, $categorias){
     };
 }
 
+// UD3.5.a Función que devuelve el año actual.
+function año(){
+    return date("Y");
+}
+
+
+// UD3.5.b Función que sobreescribe el array $proyectos haciendo que el atributo fecha sea de tipo fecha
+function x($proyectos){
+    foreach ($proyectos as $proyecto){
+        $proyecto["fecha"] = DateTime::createFromFormat('d/m/Y', $proyecto["fecha"]);
+        $proyecto["fecha"] = strtotime($proyecto["fecha"]);
+    }
+}
+
+
+
 function filtrarCategoria($proyectos) {
     if ($_GET["categoria"]) {
         $proyectosFiltrado = [];

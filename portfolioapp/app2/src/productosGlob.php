@@ -6,14 +6,18 @@ $page = isset($_GET["page"])? (int)$_GET["page"]: 1;  // variable de get referen
 $order = isset($_GET["order"])? $_GET["order"]: "ascendente";  // variable de get según como queramos ordenar los productos
 $id = isset($_GET["id"])? $_GET["id"]: false;  // variable de get que indica el id del producto seleccionado
 $categoria = isset($_GET["categoria"])? $_GET["categoria"]: false;
-$delete = isset($_GET["delete"])? $_GET["delete"]: false;
+$delete = isset($_GET["delete"])? $_GET["delete"]: false; // UD3.3.h variable de get para borrar el último proyecto mostrado según categoría
 
 ?>
 <?php include_once("datos.php") ?>
 <?php $proyectos = orderby($proyectos, $order);  // UD3.2.f ordenamos el array de proyectos haciendo uso de la función, pasándole el array y el método de orden?>
 <?php if ($categoria) {
     $proyectosFiltrado = filtrarCategoria($proyectos);
+    if ($delete) {
+        array_pop($proyectosFiltrado);
+    }
     $proyectos = $proyectosFiltrado;
+    
 }?>
 <div class="container">
     <div class="row">
@@ -41,7 +45,7 @@ $delete = isset($_GET["delete"])? $_GET["delete"]: false;
 <div class="row">
 <?php if ($page > 1) { ?>
 <div class="col d-flex justify-content-center  my-5">
-        <a href="?page=<?php print($page-1 . "&order=" . $order)  // UD3.2.f cada vez que se cambie de página, tenemos que hacer que persista la variable order?>" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="?page=<?php print($page-1 . "&order=" . $order); if ($delete) print ("&delete=" . $categoria); if ($categoria) print ("&categoria=" . $categoria)  // UD3.2.f cada vez que se cambie de página, tenemos que hacer que persista la variable order?>" class="btn btn-primary btn-lg px-3 py-1">
         ATRÁS
         </a>
 </div>
@@ -49,21 +53,21 @@ $delete = isset($_GET["delete"])? $_GET["delete"]: false;
 <?php }?>
 <!-- UD3.2.f Botón para ordenar de manera ascendente -->
 <div class="col d-flex justify-content-center my-5">
-        <a href="productosGlob.php?page=<?php print($page)  // UD3.2.f seguimos en la misma página pero cambiando el valor de la variable de entorno order?>&order=ascendente" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="productosGlob.php?page=<?php print($page . "&order=ascendente"); if ($delete) print ("&delete=" . $categoria); if ($categoria) print ("&categoria=" . $categoria)  // UD3.2.f seguimos en la misma página pero cambiando el valor de la variable de entorno order?>&order=ascendente" class="btn btn-primary btn-lg px-3 py-1">
         ORDENAR DE MANERA ASCENDENTE
         </a>
 </div>
 
 <!-- UD3.2.f Botón para ordenar de manera descentente -->
 <div class="col d-flex justify-content-center my-5">
-        <a href="productosGlob.php?page=<?php print($page)  // UD3.2.f seguimos en la misma página pero cambiando el valor de la variable de entorno order?>&order=descendente" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="productosGlob.php?page=<?php print($page. "&order=descendente"); if ($delete) print ("&delete=" . $categoria); if ($categoria) print ("&categoria=" . $categoria)  // UD3.2.f seguimos en la misma página pero cambiando el valor de la variable de entorno order?>" class="btn btn-primary btn-lg px-3 py-1">
         ORDENAR DE MANERA DESCENDENTE
         </a>
 </div>
 
 <?php if ($categoria){?>
 <div class="col d-flex justify-content-center my-5">
-        <a href="?page=<?php print($page . "&order=" . $order . "&categoria")?>" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="?page=<?php print($page . "&order=" . $order . "&delete=" . true); if ($categoria) print ("&categoria=" . $categoria)?>" class="btn btn-primary btn-lg px-3 py-1">
         BORRAR ÚLTIMO PROYECTO
         </a>
 </div>
@@ -72,7 +76,7 @@ $delete = isset($_GET["delete"])? $_GET["delete"]: false;
 
 <?php if ($page < (count($proyectos)/4) ) {?>
 <div class="col d-flex justify-content-center my-5">
-        <a href="?page=<?php print($page+1 . "&order=" . $order)  // UD3.2.f cada vez que se cambie de página, tenemos que hacer que persista la variable order?>" class="btn btn-primary btn-lg px-3 py-1">
+        <a href="?page=<?php print($page+1 . "&order=" . $order); if ($delete) print ("&delete=" . $categoria); if ($categoria) print ("&categoria=" . $categoria)  // UD3.2.f cada vez que se cambie de página, tenemos que hacer que persista la variable order?>" class="btn btn-primary btn-lg px-3 py-1">
         SIGUIENTE
         </a>
 </div>

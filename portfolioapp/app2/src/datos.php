@@ -178,6 +178,8 @@ $datosproyectos = [
     ],
 ];
 
+// UD3.3.g Crear ficheros json y leer el contenido de los mismos para asignar nuestras variables
+
 file_put_contents("datos1.json", json_encode($datosproyectos,JSON_PRETTY_PRINT));
 $proyectos = json_decode(file_get_contents("datos1.json"), true);
 

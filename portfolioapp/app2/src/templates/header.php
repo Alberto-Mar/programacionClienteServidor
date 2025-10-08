@@ -1,4 +1,5 @@
 <?php include_once('datos.php') // importamos las variables de datos?>
+<?php include_once('utils.php') // importamos las funciones de utils?>
 <html>
 <head>
     <title>Portfolio de proyectos</title>
@@ -16,7 +17,7 @@
     <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
             <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-            <span class="fs-4">Portfolio</span>
+            <span class="fs-4">Portfolio <?php print(año()) //UD3.5.a concatenamos la fecha (función creada en utils) en el header ?></span>
         </a>
 <!-- UD3.2.a Botón de inicio con un enlace al módulo index.php -->
         <ul class="nav nav-pills">
