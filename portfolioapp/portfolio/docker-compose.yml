@@ -1,9 +1,9 @@
 version: '3'
-
 services:
   web:
     image: php:7.4-apache
-    ports:  
+    ports:
       - "81:80"
-    volumes: 
-      - ./src:/var/www/html
+    volumes:
+      - ./src:/var/www/html/
+    

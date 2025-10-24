@@ -1,17 +1,23 @@
 'use strict'
-var b = 2;
-let a = 4
-console.log(a+"hola");
+// var b = 2;
+// let a = 4
+// console.log(a+"hola");
 
-function prueba(){
-    console.log(a);
+// function prueba(){
+//     console.log(a);
+// }
+
+// prueba();
+
+// if (true) {
+//     let v=100;
+//     console.log(v);
+// }
+
+// console.log(v);
+
+function fmultiple(a,b, ...c) {
+    console.log("a: "+a+" b: "+b+ " c: "+c)
+    
 }
-
-prueba();
-
-if (true) {
-    let v=100;
-    console.log(v);
-}
-
-console.log(v);
+fmultiple(1)qg
