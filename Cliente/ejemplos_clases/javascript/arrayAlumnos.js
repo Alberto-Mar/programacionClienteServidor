@@ -31,7 +31,6 @@ const alumnos = [
     
 // });
 
-// foreach 
 // alumnos.forEach((alumno, indice) => {
 //     if (indice == 0) return;
 //     console.log(alumno[0] + " tiene " + alumno[1] + " años.");
@@ -41,9 +40,45 @@ let i = parseInt(prompt("Asignatura: 1-Matemáticas, 2-Historia, 3-Inglés, 4-Pr
 // let nuevoarray = alumnos.map(alumno=>alumno[0] +" "+ alumno[i+1]);
 // nuevoarray.forEach((a, b) => b?console.log(a):"");
 
-let b = prompt("¿1-Aprobados o 2-Suspensos?");
-let aprobados = alumnos.filter(a => b?a[i+1]>=5:a[1+1]<5).map(a=>a[0] +" "+ a[1+i]).forEach(alumno => console.log(alumno));
+// let b = prompt("¿1-Aprobados o 2-Suspensos?");
+// let aprobados = alumnos.filter(a => b?a[i+1]>=5:a[1+1]<5).map(a=>a[0] +" "+ a[1+i]).forEach(alumno => console.log(alumno));
 
-let a = [4, 21, 33, 15, 19];
-console.log(a.reduce((a, b)=> a+b, 0));
+// let a = [4, 21, 33, 15, 19];
+// console.log(a.reduce((a, b)=> a+b, 0));
+
+// [sumaNotas, numNotas] = alumnos.reduce(
+//     ([suma, contador], alumno, indice)=>{
+//     if (indice != 0){
+//         suma+=alumno[i+1];
+//         contador++;
+//     }
+//     return [suma, contador];
+// }, [0, 0]
+// );
+
+
+// let c = alumnos.map(a => a[1+i])
+// let d = c.reduce((a, b) => a + b, 0) / alumnos.length;
+// console.log(c);
+
+
+// let [[alumno, aprobadas, suspendidas]] 
+
+let b = alumnos.map(a => {
+    return `${a[0]} - aprobados: ${a.slice(2).reduce((totalaprobados, nota) => {
+        if (nota >= 5) {
+            totalaprobados++;
+        }
+        return totalaprobados;
+    }, 0)} 
+    suspensos: ${a.slice(2).reduce((totalsuspensos, nota) => {
+        if (nota < 5) {
+            totalsuspensos++;
+        }
+        return totalsuspensos;
+    }, 0)}`;
+});
+
+console.log(b);
+
 
