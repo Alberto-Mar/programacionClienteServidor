@@ -7,8 +7,8 @@ $order = isset($_GET["order"])? $_GET["order"]: "ascendente";  // variable de ge
 $id = isset($_GET["id"])? $_GET["id"]: false;  // variable de get que indica el id del producto seleccionado
 $categoria = isset($_GET["categoria"])? $_GET["categoria"]: false;
 $delete = isset($_GET["delete"])? $_GET["delete"]: false; // UD3.3.h variable de get para borrar el último proyecto mostrado según categoría
-
 ?>
+
 <?php include_once("datos.php") ?>
 <?php $proyectos = orderby($proyectos, $order);  // UD3.2.f ordenamos el array de proyectos haciendo uso de la función, pasándole el array y el método de orden?>
 <?php if ($categoria) {
