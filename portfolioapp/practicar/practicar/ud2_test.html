@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>UD2 - Test practicado (Apache / Nginx)</title>
+    <style>
+        :root {
+            --bg: #0f1724;
+            --card: #0b1220;
+            --accent: #7dd3fc;
+            --muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+            margin: 0;
+            background: linear-gradient(180deg, #071026 0%, #07182a 60%);
+            color: #e6eef6
+        }
+
+        .wrap {
+            max-width: 980px;
+            margin: 28px auto;
+            padding: 20px
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), var(--glass));
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6)
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 12px 0
+        }
+
+        button {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid rgba(125, 211, 252, 0.14);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer
+        }
+
+        button.primary {
+            background: var(--accent);
+            color: #05202a;
+            border: none
+        }
+
+        .qnum {
+            font-weight: 600;
+            color: var(--accent)
+        }
+
+        .question {
+            font-size: 18px;
+            margin: 8px 0 14px
+        }
+
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            cursor: pointer
+        }
+
+        .option input {
+            margin-right: 10px
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px
+        }
+
+        .score {
+            font-weight: 700
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .result {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 8px
+        }
+
+        .result.correct {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.06));
+            border: 1px solid rgba(16, 185, 129, 0.08);
+            color: var(--success)
+        }
+
+        .result.wrong {
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.06), rgba(239, 68, 68, 0.03));
+            border: 1px solid rgba(239, 68, 68, 0.06);
+            color: var(--danger)
+        }
+
+        pre.snip {
+            background: #021226;
+            padding: 12px;
+            border-radius: 8px;
+            color: #bfeafe;
+            overflow: auto;
+            font-size: 13px
+        }
+
+        .controls .spacer {
+            flex: 1
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .confetti {
+            display: none
+        }
+
+        .explain {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .topbar {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+
+        .timer {
+            background: #001a2b;
+            padding: 6px 10px;
+            border-radius: 8px;
+            color: var(--accent);
+            font-weight: 600
+        }
+
+        .progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 12px
+        }
+
+        .progress>i {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #60a5fa);
+            width: 0%
+        }
+
+        @media (max-width:680px) {
+            .wrap {
+                padding: 12px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div>
+                <h1>UD2 — Práctica avanzada (Apache / Nginx) — Test interactivo</h1>
+                <div class="meta">40 preguntas — mezcla: test, multi-respuesta, falso/verdadero y práctico. No es fácil.
+                </div>
+            </div>
+            <div style="margin-left:auto" class="topbar">
+                <div class="timer" id="timer">00:00</div>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="top">
+                <div><span class="qnum" id="qidx">1</span> / <span id="total">0</span></div>
+                <div class="small" id="category">Cargando preguntas...</div>
+                <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+            </div>
+
+            <div id="questionArea" style="margin-top:12px">
+                <!-- question injected here -->
+            </div>
+
+            <div class="controls">
+                <button id="prevBtn">Anterior</button>
+                <button id="nextBtn" class="primary">Siguiente</button>
+                <button id="submitBtn" style="display:none">Enviar y ver resultado</button>
+                <div class="spacer"></div>
+                <button id="restartBtn">Reiniciar (aleatorio)</button>
+                <div style="width:8px"></div>
+                <div class="tag" id="difficultyTag">Dificultad: Alta</div>
+            </div>
+
+            <div class="footer">
+                <div class="small">Tipo de pregunta: <span id="qtype">—</span></div>
+                <div class="score">Acertadas: <span id="correctCount">0</span> / <span id="answeredCount">0</span></div>
+            </div>
+
+            <div id="finalArea" style="margin-top:14px"></div>
+        </div>
+    </div>
+
+    <script>
+        /*
+          Test generator basado en el PDF suministrado (UD2 - Servidor web).
+          40 preguntas, mezcladas, con explicaciones.
+          Guarda este archivo y ábrelo en el navegador.
+        */
+
+        const QUESTIONS = [
+/* 1 */ {
+                q: "¿Qué directiva en Apache define el puerto o puertos en los que escucha el servidor?",
+                type: "mcq",
+                options: ["ServerName", "Listen", "DirectoryIndex", "SSLEngine"],
+                a: ["Listen"],
+                explain: "La directiva Listen indica en qué puerto(s) y/o interfaces escucha Apache (ej. Listen 80)."
+            },
+/* 2 */ {
+                q: "En Nginx ¿qué directiva se usa para establecer el directorio raíz que sirve archivos estáticos?",
+                type: "mcq",
+                options: ["root", "DocumentRoot", "DocumentRootPath", "serve_root"],
+                a: ["root"],
+                explain: "Nginx usa 'root /ruta;' dentro del bloque server o location; Apache usa DocumentRoot."
+            },
+/* 3 */ {
+                q: "Marca las afirmaciones CORRECTAS (pueden ser varias): Apache permite .htaccess; Nginx permite .htaccess; Nginx tiene arquitectura orientada a eventos.",
+                type: "multi",
+                options: ["Apache permite .htaccess", "Nginx permite .htaccess", "Nginx es orientado a eventos"],
+                a: ["Apache permite .htaccess", "Nginx es orientado a eventos"],
+                explain: "Apache permite configuración descentralizada (.htaccess). Nginx no soporta .htaccess y su arquitectura está orientada a eventos."
+            },
+/* 4 */ {
+                q: "Comando para activar un módulo en Debian/Ubuntu para Apache:",
+                type: "mcq",
+                options: ["a2enmod nombre", "apachectl enable nombre", "mod_enable nombre", "a2modenable nombre"],
+                a: ["a2enmod nombre"],
+                explain: "En Debian/Ubuntu se usa a2enmod para habilitar módulos y a2dismod para deshabilitar."
+            },
+/* 5 */ {
+                q: "¿Cuál es el propósito de mod_proxy_fcgi / ngx_http_fastcgi_module?",
+                type: "mcq",
+                options: ["Reescribir URLs", "Servir certificados SSL", "Proxy a procesos FastCGI (ej. PHP-FPM)", "Comprimir respuestas"],
+                a: ["Proxy a procesos FastCGI (ej. PHP-FPM)"],
+                explain: "Es la funcionalidad para enviar peticiones a backends FastCGI (PHP-FPM, etc.)."
+            },
+/* 6 */ {
+                q: "Falso o Verdadero: 'restart' recarga la configuración sin interrumpir conexiones activas.",
+                type: "tf",
+                options: ["Verdadero", "Falso"],
+                a: ["Falso"],
+                explain: "'restart' reinicia el servicio, puede cortar conexiones. 'reload' recarga configuración sin cortar."
+            },
+/* 7 */ {
+                q: "En Apache ¿qué fichero contiene normalmente la configuración principal del servidor en Debian/Ubuntu?",
+                type: "mcq",
+                options: ["/etc/apache2/apache2.conf", "/etc/nginx/nginx.conf", "/etc/httpd/conf/httpd.conf", "/usr/local/apache2/conf/httpd.conf"],
+                a: ["/etc/apache2/apache2.conf"],
+                explain: "En Debian/Ubuntu la configuración principal está en /etc/apache2/apache2.conf."
+            },
+/* 8 */ {
+                q: "Selecciona la opción que describe mejor a 'VirtualHost' en Apache/Nginx:",
+                type: "mcq",
+                options: [
+                    "Un proceso en segundo plano para gestionar módulos",
+                    "Un bloque que permite servir múltiples sitios con configuración independiente",
+                    "Una herramienta para analizar logs",
+                    "Un certificado autofirmado"
+                ],
+                a: ["Un bloque que permite servir múltiples sitios con configuración independiente"],
+                explain: "VirtualHost (Apache) o bloques server (Nginx) permiten múltiples sitios en un único servidor."
+            },
+/* 9 */ {
+                q: "¿Dónde se suelen colocar los archivos de configuración de sitios disponibles en Debian/Ubuntu para Apache?",
+                type: "mcq",
+                options: ["/etc/apache2/sites-available", "/etc/nginx/sites-available", "/var/www/sites", "/usr/share/apache/sites"],
+                a: ["/etc/apache2/sites-available"],
+                explain: "sites-available contiene los .conf de sitios; sites-enabled contiene enlaces simbólicos a los activos."
+            },
+/* 10 */ {
+                q: "Indica la opción CORRECTA sobre logrotate y los logs:",
+                type: "mcq",
+                options: [
+                    "No hace falta, los logs nunca crecen",
+                    "Se usa para rotar y comprimir logs y evitar llenar disco",
+                    "Solo es útil en Nginx",
+                    "Es un módulo de Apache"
+                ],
+                a: ["Se usa para rotar y comprimir logs y evitar llenar disco"],
+                explain: "Logrotate gestiona el tamaño, rotación y compresión de logs en sistemas Linux."
+            },
+/* 11 */ {
+                q: "Configurar HTTPS en Apache requiere (marca TODO lo necesario):",
+                type: "multi",
+                options: ["mod_ssl habilitado", "Certificado (.crt) y clave (.key)", "a2enmod rewrite", "Listen 443 y VirtualHost para 443"],
+                a: ["mod_ssl habilitado", "Certificado (.crt) y clave (.key)", "Listen 443 y VirtualHost para 443"],
+                explain: "Para HTTPS se necesita mod_ssl, archivos de certificado/clave y configurar escucha en 443 + VirtualHost."
+            },
+/* 12 */ {
+                q: "En Nginx, para redirigir todo el tráfico HTTP a HTTPS normalmente se añade:",
+                type: "mcq",
+                options: ["Un VirtualHost *:443 que haga return 301", "Un server escuchando en 80 que haga 'return 301 https://$host$request_uri;'", "Un módulo mod_redirect", "Un proxy_pass a https://127.0.0.1:443"],
+                a: ["Un server escuchando en 80 que haga 'return 301 https://$host$request_uri;'"],
+                explain: "La forma habitual es tener un bloque server en puerto 80 que haga return 301 a la URL segura."
+            },
+/* 13 */ {
+                q: "Completa (fill-in): En Nginx la directiva para habilitar métricas básicas de estado es '___' (métd: stub_status).",
+                type: "fill",
+                placeholder: "stub_status",
+                a: ["stub_status"],
+                explain: "La directiva stub_status dentro de un location expone métricas básicas de Nginx."
+            },
+/* 14 */ {
+                q: "¿Qué módulo permite reescritura avanzada de URLs en Apache?",
+                type: "mcq",
+                options: ["mod_deflate", "mod_rewrite", "mod_ssl", "mod_proxy"],
+                a: ["mod_rewrite"],
+                explain: "mod_rewrite es el módulo de Apache para reescritura flexible de URLs."
+            },
+/* 15 */ {
+                q: "Selecciona las tareas que normalmente se realizan con 'apache2ctl -V' (puede haber varias):",
+                type: "multi",
+                options: [
+                    "Ver versión y opciones de compilación del servidor",
+                    "Restart del servicio",
+                    "Listar módulos cargados",
+                    "Mostrar MPM y rutas de configuración"
+                ],
+                a: ["Ver versión y opciones de compilación del servidor", "Mostrar MPM y rutas de configuración"],
+                explain: "apache2ctl -V muestra versión, opciones de compilación, MPM y rutas; apache2ctl -M lista módulos."
+            },
+/* 16 */ {
+                q: "Cómo se denomina la estructura en la que Apache guarda los módulos disponibles y los habilitados?",
+                type: "mcq",
+                options: ["mods-available / mods-enabled", "modules-available / modules-enabled", "mods-available / mods-loaded", "plugins-available / plugins-enabled"],
+                a: ["mods-available / mods-enabled"],
+                explain: "En Debian/Ubuntu son mods-available y mods-enabled (enlaces simbólicos)."
+            },
+/* 17 */ {
+                q: "Verdadero/Falso: Nginx puede cargar módulos dinámicos desde la versión 1.9.11 (2016).",
+                type: "tf",
+                options: ["Verdadero", "Falso"],
+                a: ["Verdadero"],
+                explain: "Desde 1.9.11 Nginx soporta módulos dinámicos (.so), aunque no todos los módulos lo hacen."
+            },
+/* 18 */ {
+                q: "En el contexto de Docker, ¿qué comando del temario se usa para construir la imagen del ejemplo Apache status?",
+                type: "mcq",
+                options: ["docker build -t apache-status .", "docker up apache-status", "docker run -p 80:80 apache-status", "docker compose build apache-status"],
+                a: ["docker build -t apache-status ."],
+                explain: "El ejemplo muestra 'docker build -t apache-status .' seguido de docker run -d -p 8081:80 apache-status."
+            },
+/* 19 */ {
+                q: "¿Cuál es la utilidad típica de mod_deflate o ngx_http_gzip_module?",
+                type: "mcq",
+                options: ["Compresión de respuestas HTTP", "Gestión de certificados", "Autenticación básica", "Proxy a PHP-FPM"],
+                a: ["Compresión de respuestas HTTP"],
+                explain: "Estos módulos comprimen las respuestas para reducir tamaño de transferencias."
+            },
+/* 20 */ {
+                q: "Multi: Indica qué entradas se corresponden con archivos de log (marcar todas):",
+                type: "multi",
+                options: ["access.log", "error.log", "httpd.conf", "sites-available"],
+                a: ["access.log", "error.log"],
+                explain: "access.log y error.log son archivos de registro; httpd.conf es de configuración."
+            },
+/* 21 */ {
+                q: "Pregunta práctica — lee el siguiente fragmento y responde: ¿Qué hace este bloque Apache?\n\n<VirtualHost *:80>\n  ServerName ejemplo.local\n  Redirect permanent / https://ejemplo.local/\n</VirtualHost>",
+                type: "mcq",
+                options: [
+                    "Sirve contenido en HTTP y HTTPS simultáneamente",
+                    "Redirige permanentemente todo el tráfico de HTTP a HTTPS para ese ServerName",
+                    "Activa mod_ssl",
+                    "Bloquea accesos desde fuera de la red local"
+                ],
+                a: ["Redirige permanentemente todo el tráfico de HTTP a HTTPS para ese ServerName"],
+                explain: "El VirtualHost en puerto 80 usa Redirect permanent para reenviar a la URL segura."
+            },
+/* 22 */ {
+                q: "¿Cuál de las siguientes directivas de Apache permite que .htaccess funcione para reglas de reescritura?",
+                type: "mcq",
+                options: ["AllowOverride All", "EnableHtaccess On", "AllowHtaccess On", "DirectoryRewrite On"],
+                a: ["AllowOverride All"],
+                explain: "'AllowOverride All' permite que .htaccess aplique directivas como mod_rewrite."
+            },
+/* 23 */ {
+                q: "Falso/Verdadero: Let's Encrypt requiere control sobre el dominio y un mecanismo ACME para validar el dominio (ej., webroot o DNS).",
+                type: "tf",
+                options: ["Verdadero", "Falso"],
+                a: ["Verdadero"],
+                explain: "Let's Encrypt valida la propiedad del dominio mediante ACME (webroot, DNS-01, etc.)."
+            },
+/* 24 */ {
+                q: "En Nginx ¿qué directiva se utiliza para enviar la petición a PHP-FPM desde un bloque location que captura .php?",
+                type: "mcq",
+                options: ["proxy_pass php-fpm:9000", "fastcgi_pass php-fpm:9000", "pass_php php-fpm:9000", "backend_pass php-fpm:9000"],
+                a: ["fastcgi_pass php-fpm:9000"],
+                explain: "fastcgi_pass es la directiva para pasar la petición a un backend FastCGI como php-fpm."
+            },
+/* 25 */ {
+                q: "Pregunta de práctica (ordenamiento mental): ¿Qué pasos realizas, en orden lógico, para habilitar HTTPS en Apache con un certificado autofirmado?",
+                type: "mcq",
+                options: [
+                    "Generar par clave/CRT con openssl → habilitar mod_ssl → configurar VirtualHost en :443 con SSLCertificateFile y Key → reload Apache",
+                    "Habilitar mod_rewrite → generar certificado → reiniciar Apache → editar hosts",
+                    "Editar .htaccess → generar certificado → enable module ssl → restart",
+                    "Crear Docker image → copiar certs a /etc/ssl → restart"
+                ],
+                a: ["Generar par clave/CRT con openssl → habilitar mod_ssl → configurar VirtualHost en :443 con SSLCertificateFile y Key → reload Apache"],
+                explain: "Orden lógico: generar certificados, habilitar mod_ssl, configurar VirtualHost en 443 con las rutas y recargar."
+            },
+/* 26 */ {
+                q: "¿Qué direciva de Nginx se usa para limitar la tasa de peticiones por IP (según ejemplo del temario)?",
+                type: "mcq",
+                options: ["limit_req_zone", "rate_limit_on", "limit_conn_zone", "req_limit"],
+                a: ["limit_req_zone"],
+                explain: "limit_req_zone define la zona y la tasa; luego limit_req se usa en location para aplicar la limitación."
+            },
+/* 27 */ {
+                q: "Multi: Señala qué opciones pertenecen al apartado de 'mecanismos de seguridad' según el temario:",
+                type: "multi",
+                options: ["HSTS", "CSP", "Limitación de peticiones", "EnableIndexes"],
+                a: ["HSTS", "CSP", "Limitación de peticiones"],
+                explain: "HSTS, CSP y rate limiting son medidas de seguridad; EnableIndexes no es una medida de seguridad."
+            },
+/* 28 */ {
+                q: "Verdadero/Falso: En Apache, los módulos .load y .conf suelen residir en /etc/apache2/mods-available/.",
+                type: "tf",
+                options: ["Verdadero", "Falso"],
+                a: ["Verdadero"],
+                explain: "En Debian/Ubuntu los módulos tienen .load y .conf en /etc/apache2/mods-available."
+            },
+/* 29 */ {
+                q: "Pregunta avanzada: Si necesitas exponer métricas de Nginx y ver peticiones activas, ¿qué URL/endpoint concreto suele habilitarse según el PDF?",
+                type: "mcq",
+                options: ["/nginx_status", "/server-status", "/metrics", "/statusz"],
+                a: ["/nginx_status"],
+                explain: "El ejemplo usa /nginx_status con stub_status para exponer métricas básicas de Nginx."
+            },
+/* 30 */ {
+                q: "Fill-in: Escribe la línea de openssl para crear un certificado autofirmado de 365 días con clave RSA 2048 (usa espacios similares al ejemplo).",
+                type: "fill",
+                placeholder: "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.crt -subj \"/C=ES/.../CN=localhost\"",
+                a_contains: "openssl req -x509 -nodes -days 365 -newkey rsa:2048",
+                explain: "Basta con comprobar que la línea contiene 'openssl req -x509 -nodes -days 365 -newkey rsa:2048' ya que el resto del subj puede variar."
+            },
+/* 31 */ {
+                q: "¿Cuál es la ruta por defecto que suele usarse para los logs de Apache en Debian/Ubuntu según el temario?",
+                type: "mcq",
+                options: ["/var/log/apache2/", "/var/log/httpd/", "/var/log/nginx/", "/usr/local/apache/logs/"],
+                a: ["/var/log/apache2/"],
+                explain: "En Debian/Ubuntu los logs de Apache suelen estar en /var/log/apache2/."
+            },
+/* 32 */ {
+                q: "Multi: Señala cuáles son módulos/funciones orientadas a rendimiento/optimización (marca todas):",
+                type: "multi",
+                options: ["mod_deflate", "mod_cache", "mod_rewrite", "ngx_http_gzip_module"],
+                a: ["mod_deflate", "mod_cache", "ngx_http_gzip_module"],
+                explain: "mod_deflate/gzip comprimen; mod_cache almacena en caché. mod_rewrite es para URLs."
+            },
+/* 33 */ {
+                q: "Verdadero/Falso: Para proteger directorios con autenticación básica en Nginx se usa auth_basic y auth_basic_user_file.",
+                type: "tf",
+                options: ["Verdadero", "Falso"],
+                a: ["Verdadero"],
+                explain: "Nginx usa auth_basic y auth_basic_user_file para protección por usuario/contraseña."
+            },
+/* 34 */ {
+                q: "¿Qué herramienta del temario se sugiere para análisis simple e inmediato de logs en tiempo real?",
+                type: "mcq",
+                options: ["GoAccess", "Grafana+Loki", "Graylog", "Splunk"],
+                a: ["GoAccess"],
+                explain: "GoAccess es la opción simple y rápida citada en el PDF para análisis en tiempo real."
+            },
+/* 35 */ {
+                q: "Pregunta práctica — lectura: según el ejemplo Nginx + goaccess, ¿qué puerto expone el servicio GoAccess en el contenedor?",
+                type: "mcq",
+                options: ["7890", "8080", "80", "9000"],
+                a: ["7890"],
+                explain: "El docker-compose en el ejemplo expone GoAccess en el puerto 7890."
+            },
+/* 36 */ {
+                q: "Multi: Señala cuáles son directrices básicas para buenas prácticas en VirtualHosts (temario):",
+                type: "multi",
+                options: ["Un archivo por VirtualHost", "Separar logs por sitio", "Usar números al inicio para orden de carga", "Usar un único archivo para todos sin orden"],
+                a: ["Un archivo por VirtualHost", "Separar logs por sitio", "Usar números al inicio para orden de carga"],
+                explain: "Buenas prácticas: un archivo por sitio, logs separados, y numeración para controlar orden."
+            },
+/* 37 */ {
+                q: "Falso/Verdadero: 'mod_status' en Apache permite mostrar estado del servidor en /server-status con estadísticas.",
+                type: "tf",
+                options: ["Verdadero", "Falso"],
+                a: ["Verdadero"],
+                explain: "mod_status + ExtendedStatus permite ver peticiones activas, procesos, uptime en /server-status."
+            },
+/* 38 */ {
+                q: "¿Qué comando muestra los módulos cargados en Apache (según temario)?",
+                type: "mcq",
+                options: ["apache2ctl -M", "apachectl -m", "a2list-mods", "apachectl -V"],
+                a: ["apache2ctl -M"],
+                explain: "apache2ctl -M lista los módulos cargados; apache2ctl -V muestra versión/compilación."
+            },
+/* 39 */ {
+                q: "Pregunta de práctica conceptual: ¿Por qué podría preferirse Nginx como reverse proxy frente a Apache en un entorno con muchas conexiones simultáneas?",
+                type: "mcq",
+                options: [
+                    "Porque Nginx usa arquitectura orientada a eventos y maneja mejor muchas conexiones con menos recursos",
+                    "Porque Nginx soporta .htaccess",
+                    "Porque Apache no puede funcionar como proxy",
+                    "Porque Nginx no permite contenido dinámico"
+                ],
+                a: ["Porque Nginx usa arquitectura orientada a eventos y maneja mejor muchas conexiones con menos recursos"],
+                explain: "Nginx es eficiente en concurrencia gracias a su modelo de eventos; Apache puede configurarse pero suele consumir más recursos en MPM prefork."
+            },
+/* 40 */ {
+                q: "Fill-in (práctico): Escribe la directiva que en Apache activa SSL dentro de VirtualHost (clave: SSLEngine ___).",
+                type: "fill",
+                placeholder: "on",
+                a: ["on"],
+                explain: "Dentro del VirtualHost en 443 se pone 'SSLEngine on' y se especifican SSLCertificateFile / SSLCertificateKeyFile."
+            }
+        ];
+
+        // Shuffle and prepare
+        function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]] } return a; }
+
+        let questions = shuffle(QUESTIONS.map(q => Object.assign({}, q)));
+        const TOTAL = questions.length;
+        document.getElementById('total').textContent = TOTAL;
+        let idx = 0;
+        let answersState = Array(TOTAL).fill(null);
+        let startTime = Date.now();
+        let timerInterval;
+
+        function startTimer() {
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        function updateTimer() {
+            const s = Math.floor((Date.now() - startTime) / 1000);
+            const mm = String(Math.floor(s / 60)).padStart(2, '0');
+            const ss = String(s % 60).padStart(2, '0');
+            document.getElementById('timer').textContent = mm + ':' + ss;
+        }
+
+        function renderQuestion(i) {
+            const Q = questions[i];
+            document.getElementById('qidx').textContent = i + 1;
+            document.getElementById('qtype').textContent = Q.type;
+            document.getElementById('difficultyTag').textContent = "Dificultad: Alta";
+            const prog = Math.round(((i) / TOTAL) * 100);
+            document.getElementById('prog').style.width = prog + '%';
+
+            const container = document.getElementById('questionArea');
+            container.innerHTML = '';
+            const qTitle = document.createElement('div');
+            qTitle.className = 'question';
+            qTitle.textContent = Q.q;
+            container.appendChild(qTitle);
+
+            const answers = document.createElement('div');
+            answers.className = 'answers';
+            if (Q.type === 'mcq' || Q.type === 'multi' || Q.type === 'tf') {
+                const opts = Q.type === 'tf' ? Q.options : Q.options;
+                opts.forEach((opt, id) => {
+                    const idEl = `opt_${i}_${id}`;
+                    const wrap = document.createElement('label');
+                    wrap.className = 'option';
+                    const input = document.createElement('input');
+                    input.type = (Q.type === 'multi') ? 'checkbox' : 'radio';
+                    input.name = 'answer';
+                    input.value = opt;
+                    input.id = idEl;
+                    if (answersState[i]) {
+                        // restore
+                        if (Array.isArray(answersState[i]) && answersState[i].includes(opt)) input.checked = true;
+                        if (typeof answersState[i] === 'string' && answersState[i] === opt) input.checked = true;
+                    }
+                    wrap.appendChild(input);
+                    const txt = document.createElement('span');
+                    txt.textContent = opt;
+                    wrap.appendChild(txt);
+                    answers.appendChild(wrap);
+                });
+            } else if (Q.type === 'fill') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.style.width = '100%';
+                input.style.padding = '10px';
+                input.style.borderRadius = '8px';
+                input.style.border = '1px solid rgba(255,255,255,0.04)';
+                input.placeholder = Q.placeholder || '';
+                if (answersState[i] && typeof answersState[i] === 'string') input.value = answersState[i];
+                answers.appendChild(input);
+            }
+            container.appendChild(answers);
+
+            // actions
+            document.getElementById('prevBtn').disabled = (i === 0);
+            document.getElementById('nextBtn').style.display = (i < TOTAL - 1) ? 'inline-block' : 'none';
+            document.getElementById('submitBtn').style.display = (i === TOTAL - 1) ? 'inline-block' : 'none';
+            // explanation area reset
+            const final = document.getElementById('finalArea');
+            final.innerHTML = '';
+        }
+
+        function gatherAnswer(i) {
+            const Q = questions[i];
+            if (Q.type === 'mcq' || Q.type === 'tf') {
+                const radios = document.querySelectorAll('#questionArea input[type="radio"]');
+                for (const r of radios) if (r.checked) return r.value;
+                return null;
+            }
+            if (Q.type === 'multi') {
+                const checks = document.querySelectorAll('#questionArea input[type="checkbox"]');
+                const res = [];
+                for (const c of checks) if (c.checked) res.push(c.value);
+                return res.length ? res : null;
+            }
+            if (Q.type === 'fill') {
+                const input = document.querySelector('#questionArea input[type="text"]');
+                return input && input.value.trim() ? input.value.trim() : null;
+            }
+            return null;
+        }
+
+        function scoreAll() {
+            let correct = 0, answered = 0;
+            const details = [];
+            for (let i = 0; i < TOTAL; i++) {
+                const Q = questions[i];
+                const ans = answersState[i];
+                let ok = false;
+                if (ans === null || ans === undefined) { ok = false; }
+                else {
+                    answered++;
+                    if (Q.type === 'mcq' || Q.type === 'tf') {
+                        ok = Q.a.includes(ans);
+                    } else if (Q.type === 'multi') {
+                        // compare sets
+                        const expect = new Set(Q.a);
+                        const given = new Set(ans);
+                        if (expect.size === given.size && [...expect].every(v => given.has(v))) ok = true;
+                    } else if (Q.type === 'fill') {
+                        if (Q.a) {
+                            // either exact match list or contains check
+                            if (Q.a_contains) {
+                                ok = ans.toLowerCase().includes(Q.a_contains.toLowerCase());
+                            } else {
+                                ok = Q.a.some(x => x.toLowerCase() === ans.toLowerCase());
+                            }
+                        }
+                    }
+                }
+                if (ok) correct++;
+                details.push({ i, ok, ans });
+            }
+            return { correct, answered, details };
+        }
+
+        function showResult() {
+            const res = scoreAll();
+            document.getElementById('correctCount').textContent = res.correct;
+            document.getElementById('answeredCount').textContent = res.answered;
+            const final = document.getElementById('finalArea');
+            final.innerHTML = `<div class="card" style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><strong>Resultado:</strong> ${res.correct} / ${TOTAL} acertadas</div>
+      <div class="small">Tiempo: ${document.getElementById('timer').textContent}</div>
+    </div>
+    <div style="margin-top:10px">
+      ${res.details.map(d => {
+                const Q = questions[d.i];
+                const ok = d.ok;
+                const your = d.ans === null ? '<em>sin responder</em>' : (Array.isArray(d.ans) ? d.ans.join(', ') : d.ans);
+                const correctA = Array.isArray(Q.a) ? Q.a.join(', ') : (Q.a ? Q.a : '—');
+                return `<div style="margin-top:10px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01)">
+          <div style="font-weight:600">${d.i + 1}. ${Q.q}</div>
+          <div class="${ok ? 'result correct' : 'result wrong'}">${ok ? 'Correcta' : 'Incorrecta'}</div>
+          <div class="small" style="margin-top:6px">Tu respuesta: ${your} · Correcta: ${correctA}</div>
+          <div class="explain">${Q.explain || ''}</div>
+        </div>`;
+            }).join('')}
+    </div>
+  </div>`;
+            // stop timer
+            clearInterval(timerInterval);
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            // save answer
+            const ans = gatherAnswer(idx);
+            answersState[idx] = ans;
+            // update counters
+            const sc = scoreAll();
+            document.getElementById('correctCount').textContent = sc.correct;
+            document.getElementById('answeredCount').textContent = sc.answered;
+            if (idx < TOTAL - 1) idx++;
+            renderQuestion(idx);
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            const ans = gatherAnswer(idx);
+            answersState[idx] = ans;
+            const sc = scoreAll();
+            document.getElementById('correctCount').textContent = sc.correct;
+            document.getElementById('answeredCount').textContent = sc.answered;
+            if (idx > 0) idx--;
+            renderQuestion(idx);
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            const ans = gatherAnswer(idx);
+            answersState[idx] = ans;
+            const sc = scoreAll();
+            document.getElementById('correctCount').textContent = sc.correct;
+            document.getElementById('answeredCount').textContent = sc.answered;
+            showResult();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            // re-shuffle questions and reset
+            questions = shuffle(QUESTIONS.map(q => Object.assign({}, q)));
+            idx = 0;
+            answersState = Array(TOTAL).fill(null);
+            startTime = Date.now();
+            clearInterval(timerInterval);
+            startTimer();
+            renderQuestion(0);
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('answeredCount').textContent = '0';
+            document.getElementById('finalArea').innerHTML = '';
+        });
+
+        document.getElementById('submitBtn').addEventListener('dblclick', () => {
+            // double-click to force final scoring (safety)
+            const ans = gatherAnswer(idx);
+            answersState[idx] = ans;
+            showResult();
+        });
+
+        // initialize
+        startTimer();
+        renderQuestion(0);
+        document.getElementById('total').textContent = TOTAL;
+
+        // keyboard support
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') document.getElementById('nextBtn').click();
+            if (e.key === 'ArrowLeft') document.getElementById('prevBtn').click();
+            if (e.key === 'Enter') {
+                if (document.getElementById('submitBtn').style.display !== 'none') document.getElementById('submitBtn').click();
+                else document.getElementById('nextBtn').click();
+            }
+        });
+    </script>
+</body>
+
+</html>

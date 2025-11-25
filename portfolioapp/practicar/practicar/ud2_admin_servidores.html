@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>UD2 – Administración de Servidores Web – Test completo</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            background: #0f1724;
+            color: #e7eef7
+        }
+
+        .wrap {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px
+        }
+
+        h1 {
+            margin-top: 0
+        }
+
+        .card {
+            background: #112032;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, .2)
+        }
+
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px
+        }
+
+        .option {
+            background: #18283c;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 6px 0;
+            cursor: pointer
+        }
+
+        .option input {
+            margin-right: 8px
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer
+        }
+
+        .primary {
+            background: #58c6ff;
+            color: #000
+        }
+
+        .result.correct {
+            color: #00d68f
+        }
+
+        .result.wrong {
+            color: #ff4b4b
+        }
+
+        .explain {
+            font-size: 14px;
+            color: #9bb3c9;
+            margin-top: 6px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+
+        <h1>UD2 — Test de Administración de Servidores Web (Apache / Nginx)</h1>
+        <p>40 preguntas. Basado únicamente en el contenido enviado.</p>
+
+        <div class="card">
+            <div id="qContainer"></div>
+
+            <div class="controls">
+                <button id="prevBtn">Anterior</button>
+                <button id="nextBtn" class="primary">Siguiente</button>
+                <button id="submitBtn" style="display:none;background:#00d68f;color:#000">Finalizar</button>
+            </div>
+
+            <div id="results" style="margin-top:20px"></div>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS = [
+/* 1 */ {
+                q: "Apache permite configuración descentralizada mediante qué archivo:",
+                type: "mcq",
+                options: ["apache.conf", "httpd.local", "ssl.conf", ".htaccess"],
+                a: [".htaccess"],
+                explain: "Apache permite configurar reglas por directorio mediante .htaccess."
+            },
+/* 2 */ {
+                q: "Nginx NO permite:",
+                type: "mcq",
+                options: ["Configuración descentralizada", "Proxy inverso", "FastCGI", "Servir contenido estático"],
+                a: ["Configuración descentralizada"],
+                explain: "Nginx no admite .htaccess ni configuración por directorio."
+            },
+/* 3 */ {
+                q: "¿Qué tipo de arquitectura presenta Nginx?",
+                type: "mcq",
+                options: ["Multiproceso clásico", "Orientada a eventos", "Monolítica", "Basada en hilos por petición"],
+                a: ["Orientada a eventos"],
+                explain: "Nginx maneja miles de conexiones con un solo hilo gracias al modelo orientado a eventos."
+            },
+/* 4 */ {
+                q: "Apache soporta:",
+                type: "multi",
+                options: ["HTTP/1", "HTTP/2", "Configuración modular", "Sólo HTTP/1"],
+                a: ["HTTP/1", "HTTP/2", "Configuración modular"],
+                explain: "Según el temario Apache soporta HTTP/1 y HTTP/2 y es modular."
+            },
+/* 5 */ {
+                q: "La arquitectura modular permite:",
+                type: "mcq",
+                options: ["Servir contenido sólo estático", "Extender funcionalidades por módulos", "Evitar uso de logs", "Desactivar VirtualHosts"],
+                a: ["Extender funcionalidades por módulos"],
+                explain: "Los módulos amplían el servidor (proxy, SSL, compresión, etc.)."
+            },
+/* 6 */ {
+                q: "Keep-alive en Apache sirve para:",
+                type: "mcq",
+                options: ["Reiniciar procesos", "Evitar nuevas conexiones para cada recurso", "Forzar cierre de sockets", "Habilitar FastCGI"],
+                a: ["Evitar nuevas conexiones para cada recurso"],
+                explain: "Mantiene la conexión abierta para varios elementos."
+            },
+/* 7 */ {
+                q: "Nginx es hasta ____ veces más rápido sirviendo contenido estático.",
+                type: "mcq",
+                options: ["10", "5", "2.5", "0.5"],
+                a: ["2.5"],
+                explain: "Según el texto: hasta 2.5 veces más rápido en estático."
+            },
+/* 8 */ {
+                q: "IIS es:",
+                type: "mcq",
+                options: ["Software libre", "Propiedad de Microsoft", "Solo para Linux", "Un paquete de logs"],
+                a: ["Propiedad de Microsoft"],
+                explain: "IIS es el servidor web oficial de Microsoft."
+            },
+/* 9 */ {
+                q: "El fichero que define VirtualHosts en Apache suele tener extensión:",
+                type: "mcq",
+                options: [".site", ".vhost", ".conf", ".apache"],
+                a: [".conf"],
+                explain: ".conf en /sites-available."
+            },
+/* 10 */ {
+                q: "Los directorios de configuración de VirtualHosts en Apache son:",
+                type: "multi",
+                options: ["sites-available", "sites-enabled", "mods-available", "logs-available"],
+                a: ["sites-available", "sites-enabled"],
+                explain: "sites-available y sites-enabled se usan para los sitios."
+            },
+/* 11 */ {
+                q: "El comando para activar un VirtualHost:",
+                type: "mcq",
+                options: ["a2enable", "enable-host", "a2ensite nombre", "apachectl vhost"],
+                a: ["a2ensite nombre"],
+                explain: "a2ensite / a2dissite gestionan sitios."
+            },
+/* 12 */ {
+                q: "Es recomendable:",
+                type: "mcq",
+                options: ["Un único archivo con todos los VirtualHosts", "Un fichero por VirtualHost", "Un archivo por puerto", "Solo usar el puerto 80"],
+                a: ["Un fichero por VirtualHost"],
+                explain: "Facilita la organización y evita errores."
+            },
+/* 13 */ {
+                q: "La directiva DocumentRoot indica:",
+                type: "mcq",
+                options: ["Path del sitio web", "Servidor DNS", "Puerto de acceso", "Tipo MIME"],
+                a: ["Path del sitio web"],
+                explain: "Es la ruta donde residen los archivos."
+            },
+/* 14 */ {
+                q: "ErrorLog y CustomLog sirven para:",
+                type: "multi",
+                options: ["Almacenar errores", "Guardar accesos", "Hacer proxy automático", "Compilar Apache"],
+                a: ["Almacenar errores", "Guardar accesos"],
+                explain: "Son los logs de acceso y error."
+            },
+/* 15 */ {
+                q: "Es importante separar logs por:",
+                type: "mcq",
+                options: ["Color", "Tamaño", "Sitio o aplicación", "Tipo MIME"],
+                a: ["Sitio o aplicación"],
+                explain: "Facilita análisis individual."
+            },
+/* 16 */ {
+                q: "Comando para ver en tiempo real accesos:",
+                type: "mcq",
+                options: ["sudo live-log", "tail -f /var/log/apache2/access.log", "cat access.log", "apachectl access-view"],
+                a: ["tail -f /var/log/apache2/access.log"],
+                explain: "tail -f muestra entradas en vivo."
+            },
+/* 17 */ {
+                q: "mod_deflate sirve para:",
+                type: "mcq",
+                options: ["Autenticación LDAP", "Compresión", "Proxy inverso", "Cifrado SSL"],
+                a: ["Compresión"],
+                explain: "mod_deflate comprime contenido."
+            },
+/* 18 */ {
+                q: "mod_ssl ofrece:",
+                type: "mcq",
+                options: ["Autenticación", "Logs avanzados", "Cifrado de conexiones HTTPS", "Proxy a FastCGI"],
+                a: ["Cifrado de conexiones HTTPS"],
+                explain: "Habilita HTTPS."
+            },
+/* 19 */ {
+                q: "mod_proxy_fcgi sirve para:",
+                type: "mcq",
+                options: ["Procesar PHP vía FastCGI", "Compilar Apache", "Ver logs", "Crear backups"],
+                a: ["Procesar PHP vía FastCGI"],
+                explain: "Proxy hacia procesos FastCGI."
+            },
+/* 20 */ {
+                q: "mods-available contiene:",
+                type: "mcq",
+                options: ["SSL keys", "Archivos .load y .conf de módulos", "Logs", "VirtualHosts activos"],
+                a: ["Archivos .load y .conf de módulos"],
+                explain: "Define módulos disponibles."
+            },
+/* 21 */ {
+                q: "mods-enabled contiene:",
+                type: "mcq",
+                options: ["Módulos activos mediante enlaces simbólicos", "Módulos compilados", "Backups", "VirtualHosts"],
+                a: ["Módulos activos mediante enlaces simbólicos"],
+                explain: "Contiene enlaces a mods-available."
+            },
+/* 22 */ {
+                q: "Para activar un módulo:",
+                type: "mcq",
+                options: ["a2enablemod", "a2mod", "a2enmod nombre", "apachectl enable"],
+                a: ["a2enmod nombre"],
+                explain: "a2enmod / a2dismod."
+            },
+/* 23 */ {
+                q: "Comando para iniciar Apache:",
+                type: "mcq",
+                options: ["systemctl up apache", "systemctl start apache2", "apache2ctl start", "apachectl init"],
+                a: ["systemctl start apache2"],
+                explain: "systemctl start apache2 en Debian/Ubuntu."
+            },
+/* 24 */ {
+                q: "Comando para recargar configuración sin cerrar conexiones:",
+                type: "mcq",
+                options: ["systemctl restart apache2", "systemctl reload apache2", "systemctl flush apache2", "apache2ctl hard-reload"],
+                a: ["systemctl reload apache2"],
+                explain: "reload mantiene conexiones activas."
+            },
+/* 25 */ {
+                q: "Para evitar que Apache arranque al iniciar el sistema:",
+                type: "mcq",
+                options: ["systemctl disable apache2", "apache2ctl auto-off", "disable-apache", "rm -rf /etc/apache2"],
+                a: ["systemctl disable apache2"],
+                explain: "disable evita inicio automático."
+            },
+/* 26 */ {
+                q: "apache2ctl -V muestra:",
+                type: "multi",
+                options: ["Versión", "MPM", "Parámetros de compilación", "Listado de logs actuales"],
+                a: ["Versión", "MPM", "Parámetros de compilación"],
+                explain: "-V muestra versión, MPM y compilación."
+            },
+/* 27 */ {
+                q: "El MPM de Apache en el ejemplo era:",
+                type: "mcq",
+                options: ["prefork", "worker", "event", "threaded"],
+                a: ["event"],
+                explain: "Según el texto: Server MPM: event."
+            },
+/* 28 */ {
+                q: "apache2.conf es:",
+                type: "mcq",
+                options: ["Archivo principal de configuración", "Un VirtualHost", "Un módulo", "Un archivo de logs"],
+                a: ["Archivo principal de configuración"],
+                explain: "apache2.conf es el archivo de configuración global."
+            },
+/* 29 */ {
+                q: "El archivo ports.conf indica:",
+                type: "mcq",
+                options: ["Usuarios del sistema", "VirtualHosts por defecto", "Puertos y direcciones a escuchar", "Tipos MIME"],
+                a: ["Puertos y direcciones a escuchar"],
+                explain: "Define puertos 80 y 443 según presencia de mod_ssl."
+            },
+/* 30 */ {
+                q: "Un bloque VirtualHost en Apache comienza con:",
+                type: "mcq",
+                options: ["<Apache>", "<Host>", "<VirtualHost>", "<ServerBlock>"],
+                a: ["<VirtualHost>"],
+                explain: "Ejemplo dado: <VirtualHost *:80>."
+            },
+/* 31 */ {
+                q: "ServerAdmin indica:",
+                type: "mcq",
+                options: ["Ruta del sitio", "Correo del administrador", "Puerto de servidor", "Nombre DNS"],
+                a: ["Correo del administrador"],
+                explain: "Indica contacto del administrador."
+            },
+/* 32 */ {
+                q: "ServerName indica:",
+                type: "mcq",
+                options: ["Correo", "Ruta física", "Nombre de dominio", "Grupo Unix"],
+                a: ["Nombre de dominio"],
+                explain: "Ej. ServerName www.example.com."
+            },
+/* 33 */ {
+                q: "CustomLog indica:",
+                type: "mcq",
+                options: ["Ruta de certificado", "Ruta de logs de acceso", "Módulos a cargar", "Directivas de proxy"],
+                a: ["Ruta de logs de acceso"],
+                explain: "CustomLog define acceso.log."
+            },
+/* 34 */ {
+                q: "Para ver estado del servicio Apache:",
+                type: "mcq",
+                options: ["systemctl apache2 status", "systemctl status apache2", "apache2 status", "apachectl status"],
+                a: ["systemctl status apache2"],
+                explain: "systemctl status apache2 muestra estado."
+            },
+/* 35 */ {
+                q: "Los módulos de configuración se encuentran en:",
+                type: "mcq",
+                options: ["conf_available y conf_enabled", "mods-local", "conf_modules", "mods_security"],
+                a: ["conf_available y conf_enabled"],
+                explain: "Según el texto: /conf_available y /conf_enabled."
+            },
+/* 36 */ {
+                q: "conf_enabled contiene:",
+                type: "mcq",
+                options: ["Certificados SSL", "Módulos activos mediante enlaces simbólicos", "Solo .load", "Logs"],
+                a: ["Módulos activos mediante enlaces simbólicos"],
+                explain: "Activación mediante enlaces simbólicos."
+            },
+/* 37 */ {
+                q: "ports.conf puede contener condiciones como:",
+                type: "mcq",
+                options: ["IfModule ssl_module", "IfModule php_module", "IfUser root", "IfHostExists yes"],
+                a: ["IfModule ssl_module"],
+                explain: "Ejemplo: IfModule ssl_module Listen 443."
+            },
+/* 38 */ {
+                q: "Para detener Apache:",
+                type: "mcq",
+                options: ["systemctl halt apache", "systemctl stop apache2", "apache2ctl end", "kill apache"],
+                a: ["systemctl stop apache2"],
+                explain: "stop detiene el servicio."
+            },
+/* 39 */ {
+                q: "Nginx sirve contenido dinámico a través de:",
+                type: "mcq",
+                options: ["PHP interno", "Procesos externos FastCGI", ".htaccess", "mpm-event"],
+                a: ["Procesos externos FastCGI"],
+                explain: "Nginx no ejecuta scripts directo, usa FastCGI."
+            },
+/* 40 */ {
+                q: "El problema C10k se refiere a:",
+                type: "mcq",
+                options: ["10.000 dominios", "10.000 conexiones concurrentes", "10.000 módulos", "10.000 errores por minuto"],
+                a: ["10.000 conexiones concurrentes"],
+                explain: "Nginx fue diseñado para resolverlo."
+            }
+        ];
+
+        function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+        let qs = shuffle(QUESTIONS);
+        let index = 0;
+        let answers = Array(qs.length).fill(null);
+
+        function render() {
+            const q = qs[index];
+            const box = document.getElementById("qContainer");
+            box.innerHTML = `
+    <div class="question">${index + 1}. ${q.q}</div>
+    <div id="opts"></div>
+  `;
+            const optsDiv = document.getElementById("opts");
+
+            if (q.type === "mcq" || q.type === "tf") {
+                q.options.forEach(op => {
+                    const id = Math.random();
+                    optsDiv.innerHTML += `
+        <label class="option"><input type="radio" name="ans" value="${op}"> ${op}</label>
+      `;
+                });
+            }
+            if (q.type === "multi") {
+                q.options.forEach(op => {
+                    optsDiv.innerHTML += `
+        <label class="option"><input type="checkbox" name="ans" value="${op}"> ${op}</label>
+      `;
+                });
+            }
+
+            document.getElementById("prevBtn").disabled = index === 0;
+            document.getElementById("nextBtn").style.display = index === qs.length - 1 ? "none" : "block";
+            document.getElementById("submitBtn").style.display = index === qs.length - 1 ? "block" : "none";
+        }
+
+        function save() {
+            const q = qs[index];
+            if (q.type === "mcq" || q.type === "tf") {
+                const sel = document.querySelector("input[name='ans']:checked");
+                answers[index] = sel ? sel.value : null;
+            }
+            if (q.type === "multi") {
+                const boxes = document.querySelectorAll("input[name='ans']:checked");
+                const vals = [...boxes].map(b => b.value);
+                answers[index] = vals.length ? vals : null;
+            }
+        }
+
+        document.getElementById("nextBtn").onclick = () => {
+            save();
+            index++;
+            render();
+        };
+        document.getElementById("prevBtn").onclick = () => {
+            save();
+            index--;
+            render();
+        };
+        document.getElementById("submitBtn").onclick = () => {
+            save();
+            const res = document.getElementById("results");
+            let correct = 0;
+            let html = "";
+            qs.forEach((q, i) => {
+                const user = answers[i];
+                let ok = false;
+                if (q.type === "mcq" || q.type === "tf") ok = user === q.a[0];
+                if (q.type === "multi" && Array.isArray(user)) {
+                    ok = q.a.length === user.length && q.a.every(v => user.includes(v));
+                }
+                if (ok) correct++;
+
+                html += `
+      <div style="margin-top:15px">
+        <strong>${i + 1}. ${q.q}</strong><br>
+        <div class="result ${ok ? 'correct' : 'wrong'}">
+          ${ok ? 'Correcta' : 'Incorrecta'}
+        </div>
+        <div class="explain">Explicación: ${q.explain}</div>
+      </div>
+    `;
+            });
+            res.innerHTML = `<h3>Resultado final: ${correct} / ${qs.length}</h3>` + html;
+            window.scrollTo(0, document.body.scrollHeight);
+        };
+
+        render();
+    </script>
+</body>
+
+</html>
