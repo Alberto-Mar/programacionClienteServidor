@@ -1,0 +1,8 @@
+{% extends 'portfolio/base.html' %}
+
+{% block content %}
+    {% for proyecto in proyectos %}
+       {{proyecto.titulo}} - {{proyecto.descripcion}} <br>
+       <img src="{{proyecto.imagen.url}}"></img>
+    {% endfor %}
+{% endblock %}
