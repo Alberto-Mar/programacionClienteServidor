@@ -1,4 +1,4 @@
-// Alberto Martínez Martínez
+// ALBERTO MARTINEZ MARTINEZ
 'use strict'
 let personajes=[
 		{
@@ -1831,7 +1831,7 @@ let personajes=[
             "url": "https://swapi.dev/api/people/80/"
         }, 
         {
-            "name": "   ", 
+            "name": "Raymus Antilles", 
             "height": "188", 
             "mass": "79", 
             "hair_color": "brown", 
@@ -1896,92 +1896,78 @@ let personajes=[
         }
     ];
 
-let generos=[];
+let generos=[]; // creamos la variable que almacenara los géneros únicos
 
-generos=personajes.reduce(
+generos=personajes.reduce( // usamos reduce para recorrer el array de personajes
     (arrayG,personaje)=>{
-        if(arrayG.indexOf(personaje["gender"])<0){
-            arrayG.push(personaje["gender"]);
+        if(arrayG.indexOf(personaje["gender"])<0){ // si el género del personaje no está en el array de géneros
+            arrayG.push(personaje["gender"]); // lo añadimos
         };
-        return arrayG;
+        return arrayG; 
     },
     generos
 );
 
-let url = location.search; //Contiene las variables de URL comenzando por ?.
-let variablesURL = [];
-console.log(variablesURL);
+let url = location.search; // obtenemos la parte de la url que contiene los parámetros
+let variablesUrl = [] // creamos un array para almacenar los parámetros
+variablesUrl = url?url.split("&").reduce((arrayUrl, variables)=>{ // si la url tiene parámetros, los separamos por "&" y usamos reduce para recorrerlos
+    let i = variables.split("="); // separamos cada parámetro por "="
+    arrayUrl.push(i); // añadimos el par clave-valor al array
+    return arrayUrl;
+}, variablesUrl):0; // el acumulador sera la variable anterior y si no hay parámetros, dejamos el array vacío
 
-variablesURL = url ? url.split("&").reduce((array, p) => { //Se comprueba si la URL tiene parámetros, en el caso de que sea cierto, se crea un array con los elementos separados por &.
-    // Utilizamos un reduce para que variablesURL sea un array con arrays dentro, cada array siendo el nombre de la variable de URL y su valor.
-    let temp = p.split("="); // Variable que contiene un array del nombre de variable y su valor. Ej: ["?PAGINA", "2"].
-    array.push(temp); // Se introduce dentro de lo que será el array principal, que devolverá el reduce.
-    return array;
-}, variablesURL) : ''; // Se utiliza variablesURL como elemento por defecto que utilizará la función para que se aplique al primer elemento. 
+let paginacion=variablesUrl?parseInt(variablesUrl[0][1]):1; // obtenemos el valor del parámetro PAGINA, si no existe, ponemos 1 por defecto
 
+let finalpj = paginacion*9; // calculamos el índice final del personaje a mostrar
+let iniciopj = finalpj - 9; // calculamos el índice inicial del personaje a mostrar
 
-//Variables de paginación
-let pagina = url ? parseInt(variablesURL[0][1]) : 1; //Si la URL tiene variables, se coge como número de página el valor del índice 0 (PAGINA).
-let final = pagina * 9; // Valor final que se mostrará al recorrer los personajes.
-let inicio = final - 9; // Valor inicial al mostrar los personajes.
-
-let personajesFiltrados = personajes.filter((a,i) => {
-    //Filtramos todos los personajes.
-    if(!variablesURL[1]) { //Si no existe el parámetro GENDER en la URL, el array contiene todos los personajes.
-        return true; 
-    } else { //Si existe la varaible GENDER:
-        if(a["gender"] == variablesURL[1][1]) { //Comprobamos que el valor del atributo gender del personaje coincide con el valor del parámetro de URL.
+let personajesfiltro = personajes.filter((personaje)=>{ // filtramos los personajes según el género seleccionado
+    if (!variablesUrl[1]) { // si no hay parámetro de género, el array será el original
+        return true;
+    } else {
+        if (personaje.gender==variablesUrl[1][1]) { // si el género del personaje coincide con el seleccionado, se añade al array de personajes filtrados
             return true;
         }
-    } 
-})
-personajesFiltrados.map((a, i) => { //Una vez filtrados, le aplicamos un map para mostrarlos.
-    if(i >= inicio && i< final) { //Comprobación para que aparezcan por página solamente 9 personajes.
+    }
+});
 
-        // Se realizan las siguientes comprobaciones para que aparezcan tres personajes por fila.
-        if ((i - inicio) % 3 === 0 ) { // Se comprueba si el indice es divisible entre tres para abrir los divs con clase row.
-            if (i === inicio) { // Si es el primero se abre el div.
-                document.writeln("<div class='row'>");
-            } else {
-                // Cada 3 elementos dentro de la página se cierra el div y abrimos uno nuevo.
-                document.writeln("</div><div class='row'>");
+let totalpaginas = Math.ceil(personajesfiltro.length/9); // calculamos el total de páginas redondeando hacia arriba
+ 
+
+personajesfiltro.map((personaje, indice)=>{ // recorremos el array de personajes filtrados
+    if (indice>=iniciopj && indice<finalpj) { // si el índice del personaje está dentro del rango de la página actual
+        if ((indice - iniciopj) % 3 == 0) { // cada 3 personajes, abrimos o cerramos una fila
+            if (indice == iniciopj) { // si el personaje es el primero de la página, creamos una fila nueva
+                document.writeln('<div class="row">'); 
+            } else if (indice != iniciopj && indice != finalpj) { // si no es el primero ni el último, cerramos la fila anterior y abrimos una nueva
+                document.writeln('</div>');
+                document.writeln('<div class="row">'); 
+            } else { // si es el último personaje de la página, cerramos la fila
+                document.writeln('</div>');
             }
         }
-
-        // Se escribe en el HTML los valores de los personajes.
-        document.writeln(
-        "<div class='col-sm-4'>"
-        + "<h3>" + a.name + "</h3>"
-        + "<p>Altura: " + a.height + "</p>"
-        + "<p>Peso: " + a.mass + "</p>"
-        + "<p>Resto de características...</p>"
-        + "</div>")
+        document.writeln( // mostramos la información del personaje
+        '<div class="col-sm-4">' +
+            '<h3>'+personaje.name+'</h3>'+
+            '<p>Altura: '+personaje.height+'</p>'+
+            '<p>Peso: '+personaje.mass+'</p>'+
+            '<p>Resto de características...</p>'+
+        '</div>');
     }
-})
+});
 
-let totalPag = Math.ceil(personajesFiltrados.length / 9); // Cálculo del total de páginas para controlar en la paginación cuando se llega a la última página.
-
-// Apartado de siguiente y anterior.
-document.writeln(
-    "<div class='row'>"
-    + "<div class='col-sm-4'>"
-    + "<h3>Personajes del " + (inicio + 1) + " al " + final + "</h3>" 
-    + "<a href='?PAGINA=" + (pagina < totalPag ? pagina + 1 : totalPag) + (variablesURL[1] ? "&GENDER=" + variablesURL[1][1] : '') + "'>siguientes...</a><br>" // Muestra el valor de la página y controla que al llegar a la última no continúe. Si hay variable de género también la muestra.
-    + "<a href='?PAGINA=" + (pagina > 1 ? pagina - 1 : 1) + (variablesURL[1] ? "&GENDER=" + variablesURL[1][1] : '') +"'>...anteriores</a><br>"
-    + "</div>"
-);
-
-// Apartado de géneros
-document.writeln(
-    "<div class='col-sm-4'>"
-    + "<h3>Géneros</h3>"
-)
-generos.forEach((genero) => {
-    document.writeln(
-        "<a href='?PAGINA=" + 1 + "&GENDER=" + genero + "'>" + genero + "</a><br>" // Aparecen un enlace con los diferentes géneros que hay, aplicando 
-    )
-})
+document.writeln('<div class="row>'+ // creamos una fila para la paginación y los géneros
+                    '<div class="col-sm-4">'+
+                    '<h3>Personajes del '+(iniciopj+1)+' al '+finalpj +'</h3>'+
+                    '<a href="?PAGINA='+(paginacion<totalpaginas?paginacion+1:totalpaginas)+(variablesUrl[1]?("&GENERO="+variablesUrl[1][1]):"") +'">siguientes...</a><br>'+ // enlaces a la página siguiente cambiando la variable de paginación y rescatando o no la variable de género
+                    '<a href="?PAGINA='+(paginacion>1?paginacion-1:1)+(variablesUrl[1]?("&GENERO="+variablesUrl[1][1]):"")+'">...anteriores</a>'+
+                    '</div>');
 
 
+document.writeln('<div class="col-sm-4">'+
+                    '<h3>Géneros</h3>');
 
-console.log(generos);
+generos.map((genero)=>{ 
+    document.writeln('<a href="?PAGINA=1&GENERO='+genero+'">'+genero+'</a><br>'); // mostramos los géneros como enlaces que cambian la variable de género y resetean la paginación a 1
+});
+document.writeln('</div></div>');
