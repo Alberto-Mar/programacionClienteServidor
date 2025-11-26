@@ -8,7 +8,7 @@ class Proyecto (models. Model):
     categorias = models. ManyToManyField(Categoria, verbose_name='Categoria' , related_name="proyectos")
     titulo = models. CharField(max_length = 250, verbose_name='Titulo', null=False, blank=False)
     descripcion = models. TextField(verbose_name='Descripcion', null=False, blank=False)
-    year = models. IntegerField(verbose_name='Amo', null=False, blank=False)
+    year = models. IntegerField(verbose_name='Year', null=False, blank=False)
     fecha_creacion = models. DateTimeField(verbose_name='Fecha creacion', default=now)
     imagen = models. ImageField (verbose_name = 'Imagen', null=True, blank=True)
     

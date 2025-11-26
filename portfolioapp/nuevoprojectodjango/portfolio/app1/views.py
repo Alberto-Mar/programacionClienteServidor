@@ -23,8 +23,21 @@ class ListaProyectos(TemplateView):
     template_name = 'portfolio/listaproyectos.html'
     
     def get_context_data(self, **kwargs):
-        context = super(ListaProyectos, self).get_context_data(**kwargs)
-        context['proyectos'] = Proyecto.objects.all()
+        proy_pag = 10
+        num_pag = 4
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get("query", "")
+        if query:
+            context["proyectos"] = Proyecto.objects.filter(titulo__icontains=query)
+        else:
+            context["proyectos"] = Proyecto.objects.all()
+        
+        marcado_vista = self.request.GET.get("marcado", "")
+        if marcado_vista == "true":
+            context["usuarios"] = context["usuarios"].order_by("titulo")
+        context["marcado"] = marcado_vista
+         
+        context["query"] = query
         return context
 
 class ContactoView(TemplateView):
