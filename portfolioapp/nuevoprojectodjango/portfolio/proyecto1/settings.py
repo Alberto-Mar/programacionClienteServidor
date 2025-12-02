@@ -28,10 +28,10 @@ SECRET_KEY = 'django-insecure-d9x#1y^p%%zv$u^oiyfxx!(28e(lh4+!(3vsp@5=3$(24pwbqc
 environment_variable = os.environ.get('ENVIRONMENT', '')
 if environment_variable == 'development':
     DEBUG = True    
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 if environment_variable == 'production':
     DEBUG = False
-    ALLOWED_HOSTS=['localhost','127.0.0.1']
+    ALLOWED_HOSTS=['prod.localhost']
 
 
 # Application definition
@@ -84,10 +84,10 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'proyecto_django',
+        'NAME': 'db-portfolio',
         'USER': 'alberto',
         'PASSWORD': '1234',
-        'HOST': 'bd-postgres',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }

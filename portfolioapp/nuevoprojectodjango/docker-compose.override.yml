@@ -1,5 +1,5 @@
 services:
   web:
-    command: sh /code/scripts_docker/dev/run_web.sh
+    command: sh /scripts_docker/dev/run_web.sh
     environment:
       - ENVIRONMENT=development
