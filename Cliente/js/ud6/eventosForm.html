@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="eventosForm.js" defer></script>
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <div id="alerta"></div>
+        <form method="post" id="formulario">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre">
+            <br><br>
+            <label for="select">Selecciona uno</label>
+            <select name="select" id="select">
+                <option value="uno">Uno</option>
+                <option value="dos">Dos</option>
+                <option value="tres">Tres</option>
+            </select>
+            <div id="pregunta">?</div>
+            <br><br>
+            <input type="radio" name="radio" value="opcion1"> Opción 1
+            <input type="radio" name="radio" value="opcion2"> Opción 2
+            <input type="radio" name="radio" value="opcion3"> Opción 3
+            
+        </form>
+    </div>
+</body>
+</html>
