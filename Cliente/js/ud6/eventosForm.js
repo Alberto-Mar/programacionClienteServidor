@@ -14,8 +14,9 @@ ftext.addEventListener('change', function(){
 });
 
 let fselect = document.getElementById('pregunta');
-fselect.addEventListener('mouseenter', function(e){
-    if (document.getElementById('alerta1')){
+fselect.addEventListener('mouseenter', function(){
+    let nuevoDiv = document.getElementById('alerta1')
+    if (nuevoDiv){
         nuevoDiv.textContent = 'Selecciona una opcion';
     } else {
         let nuevoDiv = document.createElement('div');
@@ -26,5 +27,5 @@ fselect.addEventListener('mouseenter', function(e){
     
 })
 fselect.addEventListener('mouseleave', function(){
-    fselect.textContent = '?';
+    document.getElementById('alerta1').textContent = '';
 })
