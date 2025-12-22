@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajax</title>
+    <script src="ajax.js" defer></script>
+    <style>
+        #datos {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .tarjeta {
+            width: 20%;
+            height: 10%;
+            border-radius: 5px;
+            background-color: lightblue;
+            margin: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header><h1>API PERSONAJES DISNEY</h1></header>
+    <div id="datos">
+        <div class="tarjeta">Tupac Sahur</div>
+    </div>
+    <div id="paginacion">
+        <a id="anterior" href="https://www.google.es">Anterior</a> - <span>Pagina 1</span> - <a id="siguiente" href="https://www.google.es">Siguiente</a>
+    </div>
+</body>
+</html>
