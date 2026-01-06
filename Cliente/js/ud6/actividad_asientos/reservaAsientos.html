@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="reservaAsientos.js" defer></script>
+    <title>Alberto Martinez</title>
+    <style>
+        #asientos {
+            display: grid;
+            grid-template-columns: repeat(10, 40px);
+            grid-gap: 5px;
+            width: max-content;
+            margin: 20px;
+        }
+        .asiento {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #000;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reserva de asientos:</h1>
+    <div id="asientos">
+        
+    </div>
+</body>
+</html>
