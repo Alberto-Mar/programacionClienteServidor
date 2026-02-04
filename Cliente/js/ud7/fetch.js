@@ -1,40 +1,61 @@
-'use strict'
+'use strict';
 
-const URL = "https://rickandmortyapi.com/api/character/1"
+const URL = "https://rickandmortyapi.com/api/character/1";
+const URLemployee = 'https://dummy.restapiexample.com/api/v1/create';
+const URLput = 'https://dummy.restapiexample.com/api/v1/update/1';
+const URLdelete = 'https://dummy.restapiexample.com/api/v1/delete/1';
 
 fetch(URL)
-    .then(recibido=>recibido.json())
-    .then(dato=>console.log(dato))
-    .catch(error=>console.log(error))
-
-
-const opcionPut = {
-    method: "PUT",
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dato)
-};
-
-const URLemployee = 'https://dummy.restapiexample.com/api/v1/create'
-const URL1employee = 'https://dummy.restapiexample.com/api/v1/employee/'
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.error(err));
 
 const datoEmpleado = {
-   employee_age: '21',
-    employee_name: 'Alberto Prueba',
-    employee_salary: '322220',
-    profile_image: "",
+  employee_name: 'Alberto Prueba',
+  employee_salary: '322220',
+  employee_age: '21',
+  profile_image: ""
 };
 
 const opcionesPost = {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dato),
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(datoEmpleado)
 };
 
 fetch(URLemployee, opcionesPost)
-    .then(recibido=>recibido.json())
-    .then(dato=>console.log(dato))
-    .catch(error=>console.log(error))
+  .then(res => res.json())
+  .then(data => console.log('POST:', data))
+  .catch(err => console.error(err));
+
+
+const empleadoActualizado = {
+  employee_name: 'Alberto Actualizado',
+  employee_salary: '500000',
+  employee_age: '22'
+};
+
+const opcionesPut = {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(empleadoActualizado)
+};
+
+fetch(URLput, opcionesPut)
+  .then(res => res.json())
+  .then(data => console.log('PUT:', data))
+  .catch(err => console.error(err));
+
+
+const opcionesDelete = {
+  method: 'DELETE'
+};
+
+fetch(URLdelete, opcionesDelete)
+  .then(res => res.json())
+  .then(data => console.log('DELETE:', data))
+  .catch(err => console.error(err));
